@@ -5,11 +5,13 @@ import { format } from 'date-fns'
 type Note = Database['public']['Tables']['notes']['Row']
 
 async function fetchNotes() {
-  await new Promise((resolve) => setTimeout(resolve, 2000)) //データフェッチの非同期性がわかりやすいように2秒の遅延を入れる。
+  // await new Promise((resolve) => setTimeout(resolve, 2000)) //データフェッチの非同期性がわかりやすいように2秒の遅延を入れる。
   const res = await fetch(`${process.env.url}/rest/v1/notes?select=*`, {
     headers: new Headers({
       apiKey: `${process.env.apikey as string}`,
     }),
+    // cache: 'no-store',これを入れることでデータベースをを更新すると静的なページでもページを更新すると最新のデータを取得できる。
+    next: { revalidate: 10 },
   })
   if (!res.ok) {
     const errorMessage = await res.text()
